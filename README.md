@@ -22,6 +22,9 @@
 ## How to run?
 * Clone the entire solution
 * Ensure dotnet cli is installed
+* Add Connection strings for mongo db.
+ * Create a db in mongo atlas and add the connection string in appsettings.json.
+ * The DatabaseName and CollectionName can be any string.
 * Use the following command to run the project:
 
 ```
