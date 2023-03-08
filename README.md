@@ -25,9 +25,15 @@
 * Add Connection strings for mongo db.
  * Create a db in mongo atlas and add the connection string in appsettings.json.
  * The DatabaseName and CollectionName can be any string.
-* Use the following command to run the project:
+* Use the following command to run the project: (cd into the api project)
 
 ```
 dotnet run
 ```
 * It should open swagger api doc by default, if not it should be in http://localhost:5206/swagger/index.html
+
+* Run test using (cd into the test project):
+
+```
+dotnet test
+```

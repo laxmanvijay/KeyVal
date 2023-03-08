@@ -3,6 +3,7 @@ using KeyValApi.Dto;
 using KeyValApi.Exceptions;
 using KeyValApi.Services;
 using KeyValTests.MockData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -20,7 +21,16 @@ public class KeyValControllerTests
     {
         _keyValService = new Mock<IKeyValService>();
         _keyValLogger = new Mock<ILogger<KeyValController>>();
-        _controller = new KeyValController(_keyValLogger.Object, _keyValService.Object);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.ContentLength = 100;
+
+        _controller = new KeyValController(_keyValLogger.Object, _keyValService.Object) 
+        {
+            ControllerContext = new ControllerContext() {
+                HttpContext = httpContext,
+            }
+        };
     }
 
     [Fact]
@@ -37,7 +47,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.CreateKeyVal(It.IsAny<KeyValDto>())).ThrowsAsync(new DuplicateKeyException("duplicate key"));
         
         var resp = await _controller.CreateKeyValue(KeyValMock.KeyValDto_ProperInput);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<BadRequestObjectResult>(resp); 
 
@@ -50,7 +59,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.CreateKeyVal(It.IsAny<KeyValDto>())).ThrowsAsync(new Exception("internal error"));
         
         var resp = await _controller.CreateKeyValue(KeyValMock.KeyValDto_ProperInput);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<ObjectResult>(resp); 
 
@@ -71,7 +79,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.GetKeyVal(It.IsAny<string>())).ThrowsAsync(new ResourceNotFoundException("key not found"));
         
         var resp = await _controller.GetKeyValue(KeyValMock.MockKey);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<BadRequestObjectResult>(resp); 
 
@@ -84,7 +91,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.GetKeyVal(It.IsAny<string>())).ThrowsAsync(new Exception("internal error"));
         
         var resp = await _controller.GetKeyValue(KeyValMock.MockKey);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<ObjectResult>(resp); 
 
@@ -105,7 +111,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.UpdateKeyVal(It.IsAny<string>(), It.IsAny<KeyValUpdateRequestDto>())).ThrowsAsync(new ResourceNotFoundException("key not found"));
         
         var resp = await _controller.UpdateKeyValue(KeyValMock.MockKey, KeyValMock.KeyValUpdateRequestDto_ProperInput);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<BadRequestObjectResult>(resp); 
 
@@ -118,7 +123,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.UpdateKeyVal(It.IsAny<string>(), It.IsAny<KeyValUpdateRequestDto>())).ThrowsAsync(new Exception("internal error"));
         
         var resp = await _controller.UpdateKeyValue(KeyValMock.MockKey, KeyValMock.KeyValUpdateRequestDto_ProperInput);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<ObjectResult>(resp); 
 
@@ -141,7 +145,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.DeleteKeyVal(It.IsAny<string>())).ThrowsAsync(new ResourceNotFoundException("key not found"));
         
         var resp = await _controller.DeleteKeyValue(KeyValMock.MockKey);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<BadRequestObjectResult>(resp); 
 
@@ -154,7 +157,6 @@ public class KeyValControllerTests
         _keyValService.Setup(x => x.DeleteKeyVal(It.IsAny<string>())).ThrowsAsync(new Exception("internal error"));
         
         var resp = await _controller.DeleteKeyValue(KeyValMock.MockKey);
-        Console.WriteLine(resp);
 
         var objectResponse = Assert.IsType<ObjectResult>(resp); 
 
